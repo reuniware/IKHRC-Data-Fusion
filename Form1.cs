@@ -76,6 +76,7 @@ namespace IKHRCDataFusion
             {
                 File.Delete(path + @"\" + "ikh-output.csv");
             }
+            log("Creating file : " + path + @"\" + ts + "-ikh-output.csv");
             FileStream fso = new FileStream(path + @"\" + ts + "-ikh-output.csv", FileMode.CreateNew);
             StreamWriter sw = new StreamWriter(fso);
             if (outputSeparator == ",")
@@ -87,8 +88,11 @@ namespace IKHRCDataFusion
             }
             for (int i = 0; i < onedataline.Count(); i++)
             {
-                if ((i>0)&&((i%250000==0)||(i>onedataline.Count()-1)))
+                int maxLinesPerFile = 125000; // 250000 = approx 20 Mb
+                if ((i>0)&&((i% maxLinesPerFile == 0)||(i>onedataline.Count()-1)))
                 {
+                    log("Creating new file, each one has a maximum of " + maxLinesPerFile + " lines of data (plus 1 header line).");
+                    log("File path : " + path + @"\" + ts + "-ikh-output" + i + ".csv");
                     sw.Close();
                     fso.Close();
                     fso = new FileStream(path + @"\" + ts + "-ikh-output" + i + ".csv", FileMode.CreateNew);
